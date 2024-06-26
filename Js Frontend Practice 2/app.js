@@ -48,16 +48,33 @@ function showUserList() {
 // Note: Get User Function
 const getUserData = (id) => {
   //   console.log(`${API_URL}${id}`);
+  var tableBody = document.getElementById("search-table-body");
+  var tablerow = document.createElement("tr");
+  tablerow.classList.add("searchTable-row");
+
   axios
     .get(`${API_URL}${id}`, {
       headers: { "app-id": appId },
     })
     .then((result) => {
-      console.log(result.data);
+      // console.log(result.data);
+      const element = result.data;
+
+      tablerow.innerHTML = `
+            <td><img src='${
+              element.picture
+            }' alt="" width="50" height="50"/> </td>
+            <td>${element.firstName.slice(0, 9)}</td>
+            <td>${element.lastName}</td>
+            <td>${element.email}</td>
+            `;
+      tableBody.append(tablerow);
     })
     .catch((err) => {
       console.log(err);
     });
+  var search = document.getElementById("search");
+  search.value = "";
 };
 
 // getUserData("60d0fe4f5311236168a109fa");
@@ -80,6 +97,8 @@ function updateUserData(id, firstname, lastname, avatar) {
     )
     .then((result) => {
       console.log(result.data);
+      // Refresh the page
+      location.reload();
     })
     .catch((err) => {
       console.log(err);
@@ -91,7 +110,7 @@ function updateUserData(id, firstname, lastname, avatar) {
 
 // Note: Create Function
 
-function createFunction(firstName, lastname, picture,email) {
+function createFunction(firstName, lastname, picture, email) {
   axios
     .post(
       `${API_URL}create`,
@@ -107,6 +126,8 @@ function createFunction(firstName, lastname, picture,email) {
     )
     .then((result) => {
       console.log(result.data);
+      // Refresh the page
+      location.reload();
     })
     .catch((err) => {
       console.log(err);
@@ -145,9 +166,8 @@ function updateUserDisplay(id) {
   var userId = document.getElementById("userId");
   var addUserForm = document.getElementById("add-user");
 
-
-  if(addUserForm.style.display == "block") {
-    addUserForm.style.display='none';
+  if (addUserForm.style.display == "block") {
+    addUserForm.style.display = "none";
     loadedData.forEach((data) => {
       if (data.id === id) {
         firstname.value = data.firstName;
@@ -156,15 +176,14 @@ function updateUserDisplay(id) {
         userId.value = id;
       }
     });
-  
+
     if (updateForm.style.display == "block") {
       updateForm.style.display = "none";
       userId.value = "";
     } else {
       updateForm.style.display = "block";
     }
-  }
-  else {
+  } else {
     loadedData.forEach((data) => {
       if (data.id === id) {
         firstname.value = data.firstName;
@@ -173,7 +192,7 @@ function updateUserDisplay(id) {
         userId.value = id;
       }
     });
-  
+
     if (updateForm.style.display == "block") {
       updateForm.style.display = "none";
       userId.value = "";
@@ -181,20 +200,6 @@ function updateUserDisplay(id) {
       updateForm.style.display = "block";
     }
   }
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
 // Note: Update the user when Submit
@@ -205,6 +210,7 @@ function updateSubmit() {
   let avatar = document.getElementById("avatar");
 
   updateUserData(userId.value, firstname.value, lastname.value, avatar.value);
+
   // if (document.querySelectorA(){
   //   const tr = document.querySelectorAll(".rowdata");
   //   const tableBody = document.getElementById("table-body");
@@ -222,16 +228,7 @@ function showAddUser() {
   var updateUserForm = document.getElementById("update-user");
 
   if (updateUserForm.style.display == "block") {
-      updateUserForm.style.display = "none"
-      if (toogleAdd.value == "0") {
-        addUserForm.style.display = "block";
-        toogleAdd.value = "1";
-      } else if (toogleAdd.value == "1") {
-        addUserForm.style.display = "none";
-        toogleAdd.value = "0";
-      }
-     
-  }else{
+    updateUserForm.style.display = "none";
     if (toogleAdd.value == "0") {
       addUserForm.style.display = "block";
       toogleAdd.value = "1";
@@ -239,10 +236,14 @@ function showAddUser() {
       addUserForm.style.display = "none";
       toogleAdd.value = "0";
     }
+  } else {
+    if (toogleAdd.value == "0") {
+      addUserForm.style.display = "block";
+    } else if (toogleAdd.value == "1") {
+      addUserForm.style.display = "none";
+      toogleAdd.value = "0";
+    }
   }
-
-
- 
 }
 
 function addUser() {
@@ -250,41 +251,65 @@ function addUser() {
   var addlastname = document.getElementById("add-lastname");
   var addavatar = document.getElementById("add-avatar");
   var addemail = document.getElementById("add-email");
-  
-  //! For Image .jpg Extension Validation 
-  var pattern = /\.jpg$/i;  
 
+  //! For Image .jpg Extension Validation
+  var pattern = /\.jpg$/i;
 
-if (addfirstname.value == "" && addlastname.value == "" && addemail.value=='' && addavatar.value=='') {
-  alert('Please Fill All Details');
-}
-else if (addfirstname.value==''){
-  alert('Please Fill First Name');
-
-}
-else if (addlastname.value==''){
-  alert('Please Fill Last Name');
-
-}
-else if (addemail.value==''){
-  alert('Please provide valid email ');
-
-}
-else if (!pattern.test(addavatar.value)){
-  alert('Please enter valid image URL');
-
-}
-else{
-  createFunction(addfirstname.value, addlastname.value,addavatar.value,addemail.value);
-
-}
-
-
-
+  if (
+    addfirstname.value == "" &&
+    addlastname.value == "" &&
+    addemail.value == "" &&
+    addavatar.value == ""
+  ) {
+    alert("Please Fill All Details");
+  } else if (addfirstname.value == "") {
+    alert("Please Fill First Name");
+  } else if (addlastname.value == "") {
+    alert("Please Fill Last Name");
+  } else if (addemail.value == "") {
+    alert("Please provide valid email ");
+  } else if (!pattern.test(addavatar.value)) {
+    alert("Please enter valid image URL");
+  } else {
+    createFunction(
+      addfirstname.value,
+      addlastname.value,
+      addavatar.value,
+      addemail.value
+    );
+  }
 }
 
-// TODO : Form Validation
+function cancel() {
+  document.getElementById("add-user").style.display = "none";
+  document.getElementById("update-user").style.display = "none";
+}
+
+function searchUser() {
+  var search = document.getElementById("search");
+  if (search.value.length == 0) {
+    if (search.style.display == "block") {
+      search.style.display = "none";
+    } else {
+      search.style.display = "block";
+    }
+  } else {
+    getUserData(search.value);
+  }
+}
+
+function refreshform() {
+  var tableBody = document.getElementById("table-body");
+  var tablerow = document.querySelectorAll(".rowdata");
+
+  tableBody.remove(tablerow);
+}
+
+// TODO : Form Validation(Html Side) -- Done
 // TODO : Delete Operation -- Done
-// TODO : Create Validation
-// TODO : Form Placement
-// TODO : Add user Button dynamic behavior
+// TODO : Create Validation --Done
+// TODO : Form Placement -- Done
+// TODO : Add user Button dynamic behavior -- Done
+// TODO : Add cancel Button  -- Done
+// TODO : Add Refresh Button  -- Done
+// TODO : Add Search Button / Show Searched User and its Functionality -- Done

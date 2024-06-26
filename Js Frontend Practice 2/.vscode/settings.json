@@ -3,9 +3,11 @@
     "addavatar",
     "addemail",
     "addfirstname",
+    "addform",
     "addlastname",
     "firstname",
     "lastname",
+    "refreshform",
     "rowdata",
     "toogle"
   ]
